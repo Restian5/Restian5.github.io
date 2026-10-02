@@ -228,6 +228,67 @@
     .coin-float.c1, .coin-float.c3 { left: -12px; }
     .coin-float.c2 { right: -12px; }
   }
+
+  /* ---------- language select ---------- */
+  .lang { border: 3px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--card); }
+  .lang select {
+    font: inherit; font-family: "Press Start 2P", monospace; font-size: 10px;
+    padding: 9px 10px; border: 0; background: var(--card); color: var(--ink);
+    cursor: pointer; appearance: none; -webkit-appearance: none;
+    padding-right: 26px;
+    background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position: calc(100% - 14px) 50%, calc(100% - 9px) 50%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+  .lang select:focus-visible { outline: 3px solid var(--sky); outline-offset: 2px; }
+  .sr-only {
+    position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+
+  /* ---------- coin game ---------- */
+  .coin-score {
+    margin: 16px 0 0; font-size: 14px; color: var(--muted);
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  }
+  .coin-score b {
+    font-family: "Press Start 2P", monospace; font-size: 15px; color: var(--coin-dark);
+    min-width: 2ch;
+  }
+  .coin-hint { opacity: .75; }
+  button.coin-float {
+    padding: 0; cursor: pointer; appearance: none; -webkit-appearance: none;
+    box-shadow: 0 2px 0 rgba(0,0,0,.25);
+    transition: transform .12s ease;
+    z-index: 3;
+  }
+  button.coin-float:hover { transform: scale(1.18) translateY(-4px); }
+  button.coin-float:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+  button.coin-float.popped {
+    animation: pop .32s ease forwards;
+    pointer-events: none;
+  }
+  @keyframes pop {
+    40% { transform: scale(1.5); opacity: 1; }
+    100% { transform: scale(.2) translateY(-26px); opacity: 0; }
+  }
+  .coin-plus {
+    position: absolute; z-index: 4; pointer-events: none;
+    font-family: "Press Start 2P", monospace; font-size: 12px;
+    color: var(--coin-dark);
+    text-shadow: 0 0 3px #fff, 1px 1px 0 var(--border);
+    animation: rise .7s ease forwards;
+    width: auto !important; height: auto !important;
+    background: none !important; border: 0 !important; border-radius: 0 !important;
+  }
+  @keyframes rise {
+    0% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-34px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    button.coin-float, .coin-plus { animation: none; transition: none; }
+  }
 </style>
 </head>
 <body>
@@ -235,12 +296,20 @@
 
   <header class="topbar">
     <a class="brand" href="#">
-      <img src="ikona_512x512.png" alt="">
+      <img src="ikona_512x512.png" alt="Pixel Runner">
       <span class="pixel">PIXEL RUNNER</span>
     </a>
-    <div class="lang" role="group" aria-label="Język / Language">
-      <button type="button" data-set-lang="pl" aria-pressed="true">PL</button>
-      <button type="button" data-set-lang="en" aria-pressed="false">EN</button>
+    <div class="lang">
+      <label class="sr-only" for="langSelect" data-i18n="langLabel">Language</label>
+      <select id="langSelect" aria-label="Language">
+        <option value="en">English</option>
+        <option value="de">Deutsch</option>
+        <option value="es">Español</option>
+        <option value="zh">中文</option>
+        <option value="hi">हिन्दी</option>
+        <option value="ru">Русский</option>
+        <option value="pl">Polski</option>
+      </select>
     </div>
   </header>
 
@@ -248,18 +317,16 @@
     <div class="hero">
       <div>
         <h1>PIXEL<br><span class="runner">RUNNER</span></h1>
-        <p class="lead" data-l="pl">Przelatuj między ołówkami, zbieraj monety i bij swój rekord — wszystko jednym palcem!</p>
-        <p class="lead" data-l="en">Fly between the pencils, grab coins and beat your high score — all with one finger!</p>
+        <p class="lead" data-i18n="lead"></p>
         <a class="btn-play play-link" href="https://play.google.com/store/apps/details?id=com.mjugames.pixelrunner" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#34a853" d="M3.6 1.8 13.4 12l-9.8 10.2c-.4-.2-.6-.7-.6-1.2V3c0-.5.2-1 .6-1.2z"/><path fill="#fbbc04" d="m17 8.5-3.6 3.5L17 15.5l4-2.3c1.1-.6 1.1-1.9 0-2.5z"/><path fill="#4285f4" d="M3.6 1.8c.3-.2.8-.2 1.3.1L17 8.5 13.4 12z"/><path fill="#ea4335" d="M13.4 12 17 15.5 4.9 22.1c-.5.3-1 .3-1.3.1z"/></svg>
-          <span><small data-l="pl">POBIERZ Z</small><small data-l="en">GET IT ON</small><strong>Google Play</strong></span>
+          <span><small data-i18n="getItOn"></small><strong>Google Play</strong></span>
         </a>
-        <div class="free-note" data-l="pl">Za darmo · działa offline · 15 języków</div>
-        <div class="free-note" data-l="en">Free · plays offline · 15 languages</div>
+        <div class="free-note" data-i18n="freeNote"></div>
+        <p class="coin-score"><span data-i18n="coinsLabel"></span> <b id="coinCount">0</b> <span class="coin-hint" data-i18n="coinHint"></span></p>
       </div>
-      <div class="phone">
-        <img src="1.png" alt="Pixel Runner — rozgrywka" width="534" height="915">
-        <i class="coin-float c1"></i><i class="coin-float c2"></i><i class="coin-float c3"></i>
+      <div class="phone" id="coinZone">
+        <img src="1.png" alt="Pixel Runner" width="534" height="915">
       </div>
     </div>
 
@@ -267,72 +334,36 @@
 
     <section>
       <div class="stats">
-        <div class="stat"><b>38</b><span data-l="pl">postaci do odblokowania</span><span data-l="en">characters to unlock</span></div>
-        <div class="stat"><b>13</b><span data-l="pl">szkolnych światów</span><span data-l="en">school-themed worlds</span></div>
-        <div class="stat"><b>50</b><span data-l="pl">osiągnięć</span><span data-l="en">achievements</span></div>
-        <div class="stat"><b>15</b><span data-l="pl">języków</span><span data-l="en">languages</span></div>
+        <div class="stat"><b>38</b><span data-i18n="stat1"></span></div>
+        <div class="stat"><b>13</b><span data-i18n="stat2"></span></div>
+        <div class="stat"><b>50</b><span data-i18n="stat3"></span></div>
+        <div class="stat"><b>15</b><span data-i18n="stat4"></span></div>
       </div>
     </section>
 
     <section>
-      <h2><span data-l="pl">Jak grać?</span><span data-l="en">How to play</span></h2>
+      <h2 data-i18n="howTitle"></h2>
       <div class="steps">
-        <div class="step">
-          <h3 data-l="pl">Dotknij ekranu</h3><h3 data-l="en">Tap the screen</h3>
-          <p data-l="pl">Każde dotknięcie to machnięcie skrzydłami — utrzymaj bohatera w powietrzu.</p>
-          <p data-l="en">Every tap is a flap — keep your hero in the air.</p>
-        </div>
-        <div class="step">
-          <h3 data-l="pl">Omijaj ołówki</h3><h3 data-l="en">Dodge the pencils</h3>
-          <p data-l="pl">Przeciskaj się przez szczeliny. Niektóre przeszkody się ruszają!</p>
-          <p data-l="en">Squeeze through the gaps. Some obstacles move!</p>
-        </div>
-        <div class="step">
-          <h3 data-l="pl">Zbieraj monety</h3><h3 data-l="en">Collect coins</h3>
-          <p data-l="pl">Wydawaj je w sklepie na postacie, światy, ulepszenia i boostery.</p>
-          <p data-l="en">Spend them in the shop on characters, worlds, upgrades and boosters.</p>
-        </div>
+        <div class="step"><h3 data-i18n="s1t"></h3><p data-i18n="s1d"></p></div>
+        <div class="step"><h3 data-i18n="s2t"></h3><p data-i18n="s2d"></p></div>
+        <div class="step"><h3 data-i18n="s3t"></h3><p data-i18n="s3d"></p></div>
       </div>
     </section>
 
     <section>
-      <h2><span class="hl" data-l="pl">Co znajdziesz w grze</span><span class="hl" data-l="en">What's inside</span></h2>
+      <h2><span class="hl" data-i18n="whatTitle"></span></h2>
       <div class="features">
-        <div class="feature"><div class="ic">⭐</div><div>
-          <h3 data-l="pl">Boostery</h3><h3 data-l="en">Boosters</h3>
-          <p data-l="pl">Gwiazda nieśmiertelności, magnes na monety, turbo, spowolnienie czasu i balon.</p>
-          <p data-l="en">Invincibility star, coin magnet, turbo, time slow-down and balloon.</p>
-        </div></div>
-        <div class="feature"><div class="ic">🛡️</div><div>
-          <h3 data-l="pl">Tarcza i drugie życie</h3><h3 data-l="en">Shield &amp; second chance</h3>
-          <p data-l="pl">Tarcza ratuje przed jednym zderzeniem, a po porażce możesz kontynuować lot.</p>
-          <p data-l="en">A shield saves you from one crash, and you can continue your run after a fail.</p>
-        </div></div>
-        <div class="feature"><div class="ic">🎨</div><div>
-          <h3 data-l="pl">Postacie i ozdoby</h3><h3 data-l="en">Characters &amp; cosmetics</h3>
-          <p data-l="pl">38 postaci oraz ślady i dodatki, które zmieniają wygląd bohatera.</p>
-          <p data-l="en">38 characters plus trails and extras that change your hero's look.</p>
-        </div></div>
-        <div class="feature"><div class="ic">📚</div><div>
-          <h3 data-l="pl">13 światów</h3><h3 data-l="en">13 worlds</h3>
-          <p data-l="pl">Matematyka, chemia, geografia, muzyka i więcej — każdy w porze dnia, wieczoru i nocy.</p>
-          <p data-l="en">Maths, chemistry, geography, music and more — each in day, evening and night moods.</p>
-        </div></div>
-        <div class="feature"><div class="ic">🎁</div><div>
-          <h3 data-l="pl">Skrzynki</h3><h3 data-l="en">Crates</h3>
-          <p data-l="pl">Otwieraj skrzynki i losuj nowe nagrody.</p>
-          <p data-l="en">Open crates and roll for new rewards.</p>
-        </div></div>
-        <div class="feature"><div class="ic">🏆</div><div>
-          <h3 data-l="pl">Osiągnięcia i ranking</h3><h3 data-l="en">Achievements &amp; leaderboard</h3>
-          <p data-l="pl">50 osiągnięć, statystyki, lokalny ranking i globalna tablica wyników.</p>
-          <p data-l="en">50 achievements, stats, a local ranking and a global leaderboard.</p>
-        </div></div>
+        <div class="feature"><div class="ic">&#11088;</div><div><h3 data-i18n="f1t"></h3><p data-i18n="f1d"></p></div></div>
+        <div class="feature"><div class="ic">&#128737;</div><div><h3 data-i18n="f2t"></h3><p data-i18n="f2d"></p></div></div>
+        <div class="feature"><div class="ic">&#127912;</div><div><h3 data-i18n="f3t"></h3><p data-i18n="f3d"></p></div></div>
+        <div class="feature"><div class="ic">&#128218;</div><div><h3 data-i18n="f4t"></h3><p data-i18n="f4d"></p></div></div>
+        <div class="feature"><div class="ic">&#127873;</div><div><h3 data-i18n="f5t"></h3><p data-i18n="f5d"></p></div></div>
+        <div class="feature"><div class="ic">&#127942;</div><div><h3 data-i18n="f6t"></h3><p data-i18n="f6d"></p></div></div>
       </div>
     </section>
 
     <section>
-      <h2><span data-l="pl">Zrzuty ekranu</span><span data-l="en">Screenshots</span></h2>
+      <h2 data-i18n="shotsTitle"></h2>
       <div class="shots">
         <figure><img src="1.png" alt="" loading="lazy" width="534" height="915"></figure>
         <figure><img src="2.png" alt="" loading="lazy" width="530" height="913"></figure>
@@ -341,48 +372,278 @@
     </section>
 
     <section class="cta">
-      <h2 class="pixel"><span data-l="pl">Pobijesz swój rekord?</span><span data-l="en">Can you beat your best?</span></h2>
-      <p data-l="pl">Jeszcze jeden lot zawsze jest o jedno dotknięcie stąd.</p>
-      <p data-l="en">One more try is always just a tap away.</p>
+      <h2 class="pixel" data-i18n="ctaTitle"></h2>
+      <p data-i18n="ctaDesc"></p>
       <a class="btn-play play-link" href="https://play.google.com/store/apps/details?id=com.mjugames.pixelrunner" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#34a853" d="M3.6 1.8 13.4 12l-9.8 10.2c-.4-.2-.6-.7-.6-1.2V3c0-.5.2-1 .6-1.2z"/><path fill="#fbbc04" d="m17 8.5-3.6 3.5L17 15.5l4-2.3c1.1-.6 1.1-1.9 0-2.5z"/><path fill="#4285f4" d="M3.6 1.8c.3-.2.8-.2 1.3.1L17 8.5 13.4 12z"/><path fill="#ea4335" d="M13.4 12 17 15.5 4.9 22.1c-.5.3-1 .3-1.3.1z"/></svg>
-        <span><small data-l="pl">POBIERZ Z</small><small data-l="en">GET IT ON</small><strong>Google Play</strong></span>
+        <span><small data-i18n="getItOn"></small><strong>Google Play</strong></span>
       </a>
     </section>
   </main>
 
   <footer>
-    <span>© 2026 MJU Games · Pixel Runner</span>
+    <span>&copy; 2026 MJU Games &middot; Pixel Runner</span>
     <nav>
-      <a href="privacy.html" target="_blank" rel="noopener"><span data-l="pl">Polityka prywatności</span><span data-l="en">Privacy policy</span></a>
+      <a href="privacy.html" data-i18n="privacy"></a>
       <a class="play-link" href="https://play.google.com/store/apps/details?id=com.mjugames.pixelrunner" target="_blank" rel="noopener">Google Play</a>
     </nav>
   </footer>
 
 </div>
+
 <script>
-  (function () {
-    var KEY = 'pr_site_lang';
-    function apply(lang) {
-      document.documentElement.lang = lang;
-      document.querySelectorAll('[data-l]').forEach(function (el) {
-        if (el.getAttribute('data-l') === lang) el.removeAttribute('data-lang-hidden');
-        else el.setAttribute('data-lang-hidden', '');
-      });
-      document.querySelectorAll('[data-set-lang]').forEach(function (b) {
-        b.setAttribute('aria-pressed', b.getAttribute('data-set-lang') === lang ? 'true' : 'false');
-      });
-      document.title = lang === 'pl' ? 'Pixel Runner — gra na Androida' : 'Pixel Runner — Android game';
-      try { localStorage.setItem(KEY, lang); } catch (e) {}
+(function () {
+  var T = {
+    en: {
+      docTitle: "Pixel Runner — Android game",
+      langLabel: "Language",
+      lead: "Fly between the pencils, grab coins and beat your high score — all with one finger!",
+      getItOn: "GET IT ON",
+      freeNote: "Free · plays offline · 15 languages",
+      coinsLabel: "Coins collected:",
+      coinHint: "(tap the coins!)",
+      stat1: "characters to unlock", stat2: "school-themed worlds", stat3: "achievements", stat4: "languages",
+      howTitle: "How to play",
+      s1t: "Tap the screen", s1d: "Every tap is a flap — keep your hero in the air.",
+      s2t: "Dodge the pencils", s2d: "Squeeze through the gaps. Some obstacles move!",
+      s3t: "Collect coins", s3d: "Spend them in the shop on characters, worlds, upgrades and boosters.",
+      whatTitle: "What's inside",
+      f1t: "Boosters", f1d: "Invincibility star, coin magnet, turbo, time slow-down and balloon.",
+      f2t: "Shield & second chance", f2d: "A shield saves you from one crash, and you can continue your run after a fail.",
+      f3t: "Characters & cosmetics", f3d: "38 characters plus trails and extras that change your hero's look.",
+      f4t: "13 worlds", f4d: "Maths, chemistry, geography, music and more — each in day, evening and night moods.",
+      f5t: "Crates", f5d: "Open crates and roll for new rewards.",
+      f6t: "Achievements & leaderboard", f6d: "50 achievements, stats, a local ranking and a global leaderboard.",
+      shotsTitle: "Screenshots",
+      ctaTitle: "Can you beat your best?", ctaDesc: "One more try is always just a tap away.",
+      privacy: "Privacy policy"
+    },
+    de: {
+      docTitle: "Pixel Runner — Android-Spiel",
+      langLabel: "Sprache",
+      lead: "Flieg zwischen den Stiften hindurch, sammle Münzen und knack deinen Rekord — alles mit einem Finger!",
+      getItOn: "JETZT BEI",
+      freeNote: "Kostenlos · offline spielbar · 15 Sprachen",
+      coinsLabel: "Gesammelte Münzen:",
+      coinHint: "(tippe auf die Münzen!)",
+      stat1: "Figuren zum Freischalten", stat2: "Schulwelten", stat3: "Erfolge", stat4: "Sprachen",
+      howTitle: "So wird gespielt",
+      s1t: "Bildschirm antippen", s1d: "Jeder Tipp ist ein Flügelschlag — halte deinen Helden in der Luft.",
+      s2t: "Stiften ausweichen", s2d: "Zwäng dich durch die Lücken. Manche Hindernisse bewegen sich!",
+      s3t: "Münzen sammeln", s3d: "Gib sie im Shop für Figuren, Welten, Upgrades und Booster aus.",
+      whatTitle: "Das steckt drin",
+      f1t: "Booster", f1d: "Unverwundbarkeitsstern, Münzmagnet, Turbo, Zeitlupe und Ballon.",
+      f2t: "Schild & zweite Chance", f2d: "Ein Schild rettet dich vor einem Crash, und nach dem Aus kannst du weiterfliegen.",
+      f3t: "Figuren & Kosmetik", f3d: "38 Figuren sowie Spuren und Extras, die deinen Helden verändern.",
+      f4t: "13 Welten", f4d: "Mathe, Chemie, Geografie, Musik und mehr — jeweils als Tag-, Abend- und Nachtvariante.",
+      f5t: "Kisten", f5d: "Öffne Kisten und erspiele neue Belohnungen.",
+      f6t: "Erfolge & Bestenliste", f6d: "50 Erfolge, Statistiken, eine lokale Rangliste und eine globale Bestenliste.",
+      shotsTitle: "Screenshots",
+      ctaTitle: "Schaffst du einen neuen Rekord?", ctaDesc: "Ein weiterer Versuch ist nur einen Tipp entfernt.",
+      privacy: "Datenschutzerklärung"
+    },
+    es: {
+      docTitle: "Pixel Runner — juego para Android",
+      langLabel: "Idioma",
+      lead: "Vuela entre los lápices, recoge monedas y supera tu récord: ¡todo con un solo dedo!",
+      getItOn: "DISPONIBLE EN",
+      freeNote: "Gratis · funciona sin conexión · 15 idiomas",
+      coinsLabel: "Monedas recogidas:",
+      coinHint: "(¡toca las monedas!)",
+      stat1: "personajes por desbloquear", stat2: "mundos escolares", stat3: "logros", stat4: "idiomas",
+      howTitle: "Cómo jugar",
+      s1t: "Toca la pantalla", s1d: "Cada toque es un aleteo: mantén a tu héroe en el aire.",
+      s2t: "Esquiva los lápices", s2d: "Célate por los huecos. ¡Algunos obstáculos se mueven!",
+      s3t: "Recoge monedas", s3d: "Gástalas en la tienda en personajes, mundos, mejoras y potenciadores.",
+      whatTitle: "Qué incluye",
+      f1t: "Potenciadores", f1d: "Estrella de invencibilidad, imán de monedas, turbo, cámara lenta y globo.",
+      f2t: "Escudo y segunda oportunidad", f2d: "El escudo te salva de un choque y puedes continuar la partida tras fallar.",
+      f3t: "Personajes y cosméticos", f3d: "38 personajes, además de estelas y extras que cambian el aspecto de tu héroe.",
+      f4t: "13 mundos", f4d: "Mates, química, geografía, música y más, cada uno de día, tarde y noche.",
+      f5t: "Cajas", f5d: "Abre cajas y consigue recompensas nuevas.",
+      f6t: "Logros y clasificación", f6d: "50 logros, estadísticas, ranking local y clasificación mundial.",
+      shotsTitle: "Capturas de pantalla",
+      ctaTitle: "¿Superarás tu récord?", ctaDesc: "Otro intento siempre está a un toque de distancia.",
+      privacy: "Política de privacidad"
+    },
+    zh: {
+      docTitle: "Pixel Runner — 安卓游戏",
+      langLabel: "语言",
+      lead: "在铅笔之间穿梭，收集金币，打破你的最高分 — 单指即可操作！",
+      getItOn: "下载自",
+      freeNote: "免费 · 可离线游玩 · 15 种语言",
+      coinsLabel: "已收集金币：",
+      coinHint: "（点击金币！）",
+      stat1: "可解锁角色", stat2: "校园主题世界", stat3: "成就", stat4: "种语言",
+      howTitle: "怎么玩",
+      s1t: "点击屏幕", s1d: "每次点击都是一次扇翅 — 让主角保持在空中。",
+      s2t: "躲避铅笔", s2d: "从缝隙中穿过。有些障碍物会移动！",
+      s3t: "收集金币", s3d: "在商店里用它们兑换角色、世界、升级和道具。",
+      whatTitle: "游戏内容",
+      f1t: "道具", f1d: "无敌星星、金币磁铁、加速、时间减速和气球。",
+      f2t: "护盾与第二次机会", f2d: "护盾可以抵挡一次撞击，失败后还能继续飞行。",
+      f3t: "角色与外观", f3d: "38 个角色，还有改变外观的轨迹和附件。",
+      f4t: "13 个世界", f4d: "数学、化学、地理、音乐等等 — 每个都有白天、傍晚和夜间氛围。",
+      f5t: "宝箱", f5d: "打开宝箱，抽取新奖励。",
+      f6t: "成就与排行榜", f6d: "50 项成就、统计数据、本地排名和全球排行榜。",
+      shotsTitle: "游戏截图",
+      ctaTitle: "能打破自己的记录吗？", ctaDesc: "再来一局，只需轻轻一点。",
+      privacy: "隐私政策"
+    },
+    hi: {
+      docTitle: "Pixel Runner — एंड्रॉयड गेम",
+      langLabel: "भाषा",
+      lead: "पेंसिलों के बीच उड़ें, सिक्के बटोरें और अपना रिकॉर्ड तोड़ें — सब एक उंगली से!",
+      getItOn: "यहाँ से लें",
+      freeNote: "मुफ़्त · ऑफ़लाइन चलता है · 15 भाषाएँ",
+      coinsLabel: "जमा किए गए सिक्के:",
+      coinHint: "(सिक्कों पर टैप करें!)",
+      stat1: "अनलॉक करने योग्य किरदार", stat2: "स्कूल थीम वाली दुनिया", stat3: "उपलब्धियाँ", stat4: "भाषाएँ",
+      howTitle: "कैसे खेलें",
+      s1t: "स्क्रीन पर टैप करें", s1d: "हर टैप एक फ़्लैप है — अपने हीरो को हवा में बनाए रखें।",
+      s2t: "पेंसिलों से बचें", s2d: "खाली जगह से निकलें। कुछ रुकावटें चलती हैं!",
+      s3t: "सिक्के बटोरें", s3d: "उन्हें दुकान में किरदारों, दुनिया, अपग्रेड और बूस्टर पर खर्च करें।",
+      whatTitle: "गेम में क्या है",
+      f1t: "बूस्टर", f1d: "अजेयता सितारा, सिक्का चुंबक, टर्बो, समय धीमा और गुब्बारा।",
+      f2t: "ढाल और दूसरा मौका", f2d: "ढाल एक टक्कर से बचाती है, और हारने के बाद भी आप उड़ान जारी रख सकते हैं।",
+      f3t: "किरदार और सजावट", f3d: "38 किरदार, साथ ही ट्रेल और ऐसे आइटम जो हीरो का रूप बदलते हैं।",
+      f4t: "13 दुनिया", f4d: "गणित, रसायन, भूगोल, संगीत और बहुत कुछ — हर एक दिन, शाम और रात के रूप में।",
+      f5t: "संदूक", f5d: "संदूक खोलें और नए इनाम पाएं।",
+      f6t: "उपलब्धियाँ और लीडरबोर्ड", f6d: "50 उपलब्धियाँ, आँकड़े, स्थानीय रैंकिंग और वैश्विक लीडरबोर्ड।",
+      shotsTitle: "स्क्रीनशॉट",
+      ctaTitle: "अपना रिकॉर्ड तोड़ पाएंगे?", ctaDesc: "एक और कोशिश हमेशा बस एक टैप दूर है।",
+      privacy: "गोपनीयता नीति"
+    },
+    ru: {
+      docTitle: "Pixel Runner — игра для Android",
+      langLabel: "Язык",
+      lead: "Пролетай между карандашами, собирай монеты и бей свой рекорд — всё одним пальцем!",
+      getItOn: "ДОСТУПНО В",
+      freeNote: "Бесплатно · работает офлайн · 15 языков",
+      coinsLabel: "Собрано монет:",
+      coinHint: "(нажми на монеты!)",
+      stat1: "персонажей для разблокировки", stat2: "школьных миров", stat3: "достижений", stat4: "языков",
+      howTitle: "Как играть",
+      s1t: "Касайся экрана", s1d: "Каждое касание — взмах крыльями. Держи героя в воздухе.",
+      s2t: "Уворачивайся от карандашей", s2d: "Проскакивай в просветы. Некоторые препятствия двигаются!",
+      s3t: "Собирай монеты", s3d: "Трать их в магазине на персонажей, миры, улучшения и бустеры.",
+      whatTitle: "Что внутри",
+      f1t: "Бустеры", f1d: "Звезда неуязвимости, магнит для монет, турбо, замедление времени и воздушный шар.",
+      f2t: "Щит и второй шанс", f2d: "Щит спасает от одного столкновения, а после проигрыша можно продолжить полёт.",
+      f3t: "Персонажи и облик", f3d: "38 персонажей, а также шлейфы и дополнения, меняющие внешность героя.",
+      f4t: "13 миров", f4d: "Математика, химия, география, музыка и другие — каждый днём, вечером и ночью.",
+      f5t: "Сундуки", f5d: "Открывай сундуки и получай новые награды.",
+      f6t: "Достижения и рейтинг", f6d: "50 достижений, статистика, локальный рейтинг и глобальная таблица лидеров.",
+      shotsTitle: "Скриншоты",
+      ctaTitle: "Побьёшь свой рекорд?", ctaDesc: "Ещё одна попытка всегда в одном касании.",
+      privacy: "Политика конфиденциальности"
+    },
+    pl: {
+      docTitle: "Pixel Runner — gra na Androida",
+      langLabel: "Język",
+      lead: "Przelatuj między ołówkami, zbieraj monety i bij swój rekord — wszystko jednym palcem!",
+      getItOn: "POBIERZ Z",
+      freeNote: "Za darmo · działa offline · 15 języków",
+      coinsLabel: "Zebrane monety:",
+      coinHint: "(klikaj monety!)",
+      stat1: "postaci do odblokowania", stat2: "szkolnych światów", stat3: "osiągnięć", stat4: "języków",
+      howTitle: "Jak grać?",
+      s1t: "Dotknij ekranu", s1d: "Każde dotknięcie to machnięcie skrzydłami — utrzymaj bohatera w powietrzu.",
+      s2t: "Omijaj ołówki", s2d: "Przeciskaj się przez szczeliny. Niektóre przeszkody się ruszają!",
+      s3t: "Zbieraj monety", s3d: "Wydawaj je w sklepie na postacie, światy, ulepszenia i boostery.",
+      whatTitle: "Co znajdziesz w grze",
+      f1t: "Boostery", f1d: "Gwiazda nieśmiertelności, magnes na monety, turbo, spowolnienie czasu i balon.",
+      f2t: "Tarcza i drugie życie", f2d: "Tarcza ratuje przed jednym zderzeniem, a po porażce możesz kontynuować lot.",
+      f3t: "Postacie i ozdoby", f3d: "38 postaci oraz ślady i dodatki, które zmieniają wygląd bohatera.",
+      f4t: "13 światów", f4d: "Matematyka, chemia, geografia, muzyka i więcej — każdy w porze dnia, wieczoru i nocy.",
+      f5t: "Skrzynki", f5d: "Otwieraj skrzynki i losuj nowe nagrody.",
+      f6t: "Osiągnięcia i ranking", f6d: "50 osiągnięć, statystyki, lokalny ranking i globalna tablica wyników.",
+      shotsTitle: "Zrzuty ekranu",
+      ctaTitle: "Pobijesz swój rekord?", ctaDesc: "Jeszcze jeden lot zawsze jest o jedno dotknięcie stąd.",
+      privacy: "Polityka prywatności"
     }
+  };
+
+  var KEY = 'pr_site_lang';
+  var sel = document.getElementById('langSelect');
+
+  function apply(lang) {
+    var d = T[lang] || T.en;
+    document.documentElement.lang = lang;
+    document.title = d.docTitle;
+    var m = document.querySelector('meta[name="description"]');
+    if (m) m.setAttribute('content', d.lead);
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      var v = d[el.getAttribute('data-i18n')];
+      if (v !== undefined) el.textContent = v;
+    });
+    if (sel) sel.value = lang;
+    try { localStorage.setItem(KEY, lang); } catch (e) {}
+  }
+
+  function detect() {
     var saved = null;
     try { saved = localStorage.getItem(KEY); } catch (e) {}
-    var initial = saved || ((navigator.language || 'pl').toLowerCase().indexOf('pl') === 0 ? 'pl' : 'en');
-    apply(initial);
-    document.querySelectorAll('[data-set-lang]').forEach(function (b) {
-      b.addEventListener('click', function () { apply(b.getAttribute('data-set-lang')); });
-    });
-  })();
+    if (saved && T[saved]) return saved;
+    var list = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language || 'en'];
+    for (var i = 0; i < list.length; i++) {
+      var code = String(list[i]).toLowerCase();
+      var base = code.split('-')[0];
+      if (base === 'zh') return 'zh';
+      if (T[base]) return base;
+    }
+    return 'en';
+  }
+
+  apply(detect());
+  if (sel) sel.addEventListener('change', function () { apply(sel.value); });
+
+  /* ---------- clickable coins ---------- */
+  var zone = document.getElementById('coinZone');
+  var out = document.getElementById('coinCount');
+  if (zone && out && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    var spots = [
+      { top: '10%', left: '-34px', size: 38, delay: 0 },
+      { top: '44%', right: '-30px', size: 30, delay: .6 },
+      { bottom: '12%', left: '-24px', size: 26, delay: 1.2 },
+      { top: '72%', right: '-22px', size: 24, delay: .3 },
+      { top: '26%', right: '-38px', size: 34, delay: .9 },
+      { bottom: '34%', left: '-36px', size: 32, delay: 1.5 }
+    ];
+    var score = 0;
+
+    function makeCoin(spec) {
+      var c = document.createElement('button');
+      c.type = 'button';
+      c.className = 'coin-float';
+      c.setAttribute('aria-hidden', 'true');
+      c.tabIndex = -1;
+      c.style.width = spec.size + 'px';
+      c.style.height = spec.size + 'px';
+      c.style.animationDelay = spec.delay + 's';
+      ['top', 'left', 'right', 'bottom'].forEach(function (k) {
+        if (spec[k] !== undefined) c.style[k] = spec[k];
+      });
+      c.addEventListener('click', function () {
+        if (c.classList.contains('popped')) return;
+        c.classList.add('popped');
+        score++;
+        out.textContent = score;
+        var spark = document.createElement('span');
+        spark.className = 'coin-plus';
+        spark.textContent = '+1';
+        spark.style.cssText = c.style.cssText;
+        spark.style.animationDelay = '0s';
+        zone.appendChild(spark);
+        setTimeout(function () { spark.remove(); }, 700);
+        setTimeout(function () { c.remove(); makeCoin(spec); }, 2600);
+      });
+      zone.appendChild(c);
+      return c;
+    }
+    spots.forEach(makeCoin);
+  }
+})();
 </script>
 </body>
 </html>
